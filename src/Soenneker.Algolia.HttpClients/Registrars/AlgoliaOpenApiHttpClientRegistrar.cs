@@ -11,7 +11,7 @@ namespace Soenneker.Algolia.HttpClients.Registrars;
 public static class AlgoliaOpenApiHttpClientRegistrar
 {
     /// <summary>
-    /// Adds <see cref="AlgoliaOpenApiHttpClient"/> as a singleton service. <para/>
+    /// Adds <see cref="IAlgoliaOpenApiHttpClient"/> as a singleton service backed by the singleton HTTP-client cache.
     /// </summary>
     public static IServiceCollection AddAlgoliaOpenApiHttpClientAsSingleton(this IServiceCollection services)
     {
@@ -22,7 +22,7 @@ public static class AlgoliaOpenApiHttpClientRegistrar
     }
 
     /// <summary>
-    /// Adds <see cref="AlgoliaOpenApiHttpClient"/> as a scoped service. <para/>
+    /// Adds <see cref="IAlgoliaOpenApiHttpClient"/> as a scoped service backed by the singleton HTTP-client cache.
     /// </summary>
     public static IServiceCollection AddAlgoliaOpenApiHttpClientAsScoped(this IServiceCollection services)
     {

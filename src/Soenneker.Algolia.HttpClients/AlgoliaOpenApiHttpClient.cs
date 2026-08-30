@@ -11,13 +11,10 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.Algolia.HttpClients;
 
-///<inheritdoc cref="IAlgoliaOpenApiHttpClient"/>
 public sealed class AlgoliaOpenApiHttpClient : IAlgoliaOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
     private readonly IConfiguration _config;
-
-    private const string _prodBaseUrl = "https://api.netlify.com/api/v1";
 
     public AlgoliaOpenApiHttpClient(IHttpClientCache httpClientCache, IConfiguration config)
     {
@@ -27,38 +24,35 @@ public sealed class AlgoliaOpenApiHttpClient : IAlgoliaOpenApiHttpClient
 
     public ValueTask<HttpClient> Get(CancellationToken cancellationToken = default)
     {
-        return _httpClientCache.Get(nameof(AlgoliaOpenApiHttpClient), (config: _config, baseUrl: _config["Algolia:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
+        return _httpClientCache.Get(nameof(AlgoliaOpenApiHttpClient), _config, static config =>
         {
-            var apiKey = state.config.GetValueStrict<string>("Algolia:ApiKey");
-            string authHeaderName = state.config["Algolia:AuthHeaderName"] ?? "Authorization";
-            string authHeaderValueTemplate = state.config["Algolia:AuthHeaderValueTemplate"] ?? "Bearer {token}";
+            var apiKey = config.GetValueStrict<string>("Algolia:ApiKey");
+            var applicationId = config.GetValueStrict<string>("Algolia:ApplicationId");
+            var baseUrl = config.GetValueStrict<string>("Algolia:ClientBaseUrl");
+            string authHeaderName = config["Algolia:AuthHeaderName"] ?? "X-Algolia-API-Key";
+            string authHeaderValueTemplate = config["Algolia:AuthHeaderValueTemplate"] ?? "{token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
 
             return new HttpClientOptions
             {
-                BaseAddress = new Uri(state.baseUrl),
+                BaseAddress = new Uri(baseUrl),
                 DefaultRequestHeaders = new Dictionary<string, string>
                 {
                     {authHeaderName, authHeaderValue},
+                    {"X-Algolia-Application-Id", applicationId},
                 }
             };
         }, cancellationToken);
     }
 
-    /// <summary>
-    /// Releases resources used by the current instance.
-    /// </summary>
     public void Dispose()
     {
-        _httpClientCache.RemoveSync(nameof(AlgoliaOpenApiHttpClient));
+        // The singleton cache owns the named client. A scoped provider must not remove it.
     }
 
-    /// <summary>
-    /// Asynchronously releases resources used by the current instance.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask DisposeAsync()
     {
-        return _httpClientCache.Remove(nameof(AlgoliaOpenApiHttpClient));
+        // Kept for API compatibility; the singleton cache owns the named client.
+        return ValueTask.CompletedTask;
     }
 }
