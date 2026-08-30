@@ -61,4 +61,4 @@ public sealed class AlgoliaTransport
 }
 ```
 
-`Get()` creates the named client on first use and returns that cached instance afterward. Configuration changes do not rebuild an existing client. The dependency-injection container owns resolved providers, and disposing a scoped provider does not remove the shared client.
+`Get()` creates the named client on first use and returns that cached instance afterward. Configuration changes do not rebuild an existing client. The dependency-injection container owns resolved providers; disposing a provider removes and disposes its named client from the shared cache.

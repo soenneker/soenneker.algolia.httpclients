@@ -47,12 +47,11 @@ public sealed class AlgoliaOpenApiHttpClient : IAlgoliaOpenApiHttpClient
 
     public void Dispose()
     {
-        // The singleton cache owns the named client. A scoped provider must not remove it.
+        _httpClientCache.RemoveSync(nameof(AlgoliaOpenApiHttpClient));
     }
 
     public ValueTask DisposeAsync()
     {
-        // Kept for API compatibility; the singleton cache owns the named client.
-        return ValueTask.CompletedTask;
+        return _httpClientCache.Remove(nameof(AlgoliaOpenApiHttpClient));
     }
 }
