@@ -11,6 +11,7 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.Algolia.HttpClients;
 
+/// <inheritdoc cref="IAlgoliaOpenApiHttpClient" />
 public sealed class AlgoliaOpenApiHttpClient : IAlgoliaOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
