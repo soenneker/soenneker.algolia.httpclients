@@ -27,9 +27,9 @@ public sealed class AlgoliaOpenApiHttpClient : IAlgoliaOpenApiHttpClient
     {
         return _httpClientCache.Get(nameof(AlgoliaOpenApiHttpClient), _config, static config =>
         {
-            var apiKey = config.GetValueStrict<string>("Algolia:ApiKey");
-            var applicationId = config.GetValueStrict<string>("Algolia:ApplicationId");
-            var baseUrl = config.GetValueStrict<string>("Algolia:ClientBaseUrl");
+            var apiKey = config.GetStringStrict("Algolia:ApiKey");
+            var applicationId = config.GetStringStrict("Algolia:ApplicationId");
+            var baseUrl = config.GetStringStrict("Algolia:ClientBaseUrl");
             string authHeaderName = config["Algolia:AuthHeaderName"] ?? "X-Algolia-API-Key";
             string authHeaderValueTemplate = config["Algolia:AuthHeaderValueTemplate"] ?? "{token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
